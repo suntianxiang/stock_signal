@@ -1,0 +1,6 @@
+## 机器人信号
+{% for signal in signals %}
+1. __<font color={% if signal.flag==1 %}#00dd00{% else %}#f85149{% endif %}>
+    {% if signal.flag == 1 %}long{% else %}short{% endif %} {{signal.symbol}}</font>__ **{{signal.period}}
+{{signal.indicator}}** :{{signal.last}} price:{{signal.price}}
+{% endfor %}
