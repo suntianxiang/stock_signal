@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from talib import EMA
 from bot.graph import candlestick, ma_line
 import datetime
+import numpy
 
 
 def strategy_fatory(name):
@@ -29,11 +30,13 @@ def draw_image(data, ema20, ema30, ema99):
     return figure
 
 
+# init html template
 env = Environment(
     loader=FileSystemLoader("templates"),
     autoescape=select_autoescape()
 )
 template = env.get_template("notice.html")
+
 sina = Sina()
 notification = DingDing()
 strategies = []
@@ -59,10 +62,15 @@ for v in symbols:
                 'last': strategy.last,
                 'price': last_price
             })
-    figure = draw_image(res, EMA([v['close'] for v in res], 20), EMA(
-        [v['close'] for v in res], 30), EMA([v['close'] for v in res], 99))
-    figure.write_image("{}_{}.webp".format(
-        chinese, str(datetime.date.today())))
+            figure = draw_image(res,
+                                EMA(numpy.array([numpy.array(float(v['close']))
+                                                 for v in res]), 20),
+                                EMA(numpy.array([numpy.array(float(v['close']))
+                                                 for v in res]), 30),
+                                EMA(numpy.array([numpy.array(float(v['close']))
+                                                 for v in res]), 99))
+            figure.write_image("{}_{}.jpg".format(
+                chinese, str(datetime.date.today())), width=1680, height=900)
 if len(signals) > 0:
     res = template.render(signals=signals)
     notification.notify('bot signal', res)

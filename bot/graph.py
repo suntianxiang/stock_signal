@@ -4,7 +4,7 @@ import pandas as pd
 
 def candlestick(data):
     fig = go.Figure(
-        # layout=go.Layout(xaxis=dict(title_text='ttt', type='category')),
+        layout=go.Layout(xaxis=dict(title_text='time', type='category')),
         data=[
             go.Candlestick(
                 x=[v['day'] for v in data],
@@ -14,6 +14,7 @@ def candlestick(data):
                 close=[v['close'] for v in data])
         ])
     fig.update_layout(xaxis_rangeslider_visible=False)
+    fig.update_traces(showlegend=False)
     return fig
 
 

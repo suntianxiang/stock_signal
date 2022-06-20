@@ -9,17 +9,16 @@ import datetime
 def draw_image(data, ema20, ema30, ema99):
     figure = candlestick(data)
     scatter20 = ma_line([v['day'] for v in data], ema20)
-    # scatter30 = ma_line([v['day'] for v in data], ema30)
-    # scatter99 = ma_line([v['day'] for v in data], ema99)
+    scatter30 = ma_line([v['day'] for v in data], ema30)
+    scatter99 = ma_line([v['day'] for v in data], ema99)
     figure.add_trace(scatter20)
-    # figure.add_trace(scatter30)
-    # figure.add_trace(scatter99)
+    figure.add_trace(scatter30)
+    figure.add_trace(scatter99)
     return figure
 
 
 sina = Sina()
-res = sina.kline('sz002286', 60, 20)
-print(res)
+res = sina.kline('sz002286', 60, 100)
 
 # closes = [float(e['close']) for e in res]
 # up, mid, low = BBANDS(numpy.array(closes), timeperiod=20)
@@ -30,8 +29,7 @@ figure = draw_image(res,
                     EMA(numpy.array([float(v['close']) for v in res]), 99)
                     )
 res = figure.write_image("{}_{}.webp".format(
-    'ttt', str(datetime.date.today())))
-print(res)
+    'ttt', str(datetime.date.today())), width=1680, height=900)
 
 # dingding = DingDing()
 # res = dingding.notify()
