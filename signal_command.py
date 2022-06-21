@@ -5,10 +5,11 @@ from bot.market import Sina
 from bot.config import config
 from bot.notification import DingDing
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from talib import EMA
-from bot.graph import candlestick, ma_line
+from talib import EMA, MACD
+from bot.graph import candlestick, ma_line, macd_figure
 import datetime
 import numpy
+import plotly.graph_objects as go
 
 
 def strategy_fatory(name):
@@ -20,14 +21,23 @@ def strategy_fatory(name):
 
 
 def draw_image(data, ema20, ema30, ema99):
-    figure = candlestick(data)
-    scatter20 = ma_line([v['day'] for v in data], ema20)
-    scatter30 = ma_line([v['day'] for v in data], ema30)
-    scatter99 = ma_line([v['day'] for v in data], ema99)
-    figure.add_trace(scatter20)
-    figure.add_trace(scatter30)
-    figure.add_trace(scatter99)
-    return figure
+    x = [v['day'] for v in data]
+    xText = [datetime.datetime.strptime(
+        v, '%Y-%m-%d %H:%M:%S').strftime('%m-%d %H:%M') if k % 8 == 0 else ''
+        for k, v in enumerate(x)]
+    candle = candlestick(data)
+    macd, signal, his = MACD(numpy.array([float(v['close']) for v in res]))
+    macd_component = macd_figure(x, macd, signal, his)
+    ma20 = ma_line(x, ema20)
+    ma30 = ma_line(x, ema30)
+    ma99 = ma_line(x, ema99)
+    img = go.Figure([candle, ma20, ma30, ma99] + macd_component)
+    img.update_layout(
+        xaxis=dict(title_text='time', type='category', tickmode='array',
+                   tickvals=x, ticktext=xText),
+        yaxis=dict(title="Price", anchor="x", domain=[0.27, 0.95]),
+        yaxis2=dict(title="MACD", anchor="x", domain=[0.05, 0.23]))
+    return img
 
 
 # init html template

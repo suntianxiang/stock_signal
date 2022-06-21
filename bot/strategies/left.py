@@ -1,4 +1,4 @@
-from talib import BBANDS, STOCH
+from talib import BBANDS, STOCH, MACD
 import numpy
 
 
@@ -26,6 +26,19 @@ class BollStoch:
 
     def getReason(self, signal):
         if signal == 1:
-            return 'price over boll up line and stoch > 80'
+            return 'macd crossover'
         if signal == -1:
-            return 'price upder boll low line and stoch < 20'
+            return 'macd crossdown'
+
+
+class MACDCross:
+    def indicate(self, data):
+        closes = numpy.array([float(e['close']) for e in data])
+        _, _, macdhist = MACD(
+            closes, fastperiod=12, slowperiod=26, signalperiod=9)
+        last_two = macdhist[-2:]
+        if (last_two[0] < 0 and last_two[1] > 0):
+            return 1
+        if (last_two[0] > 0 and last_two[1] < 0):
+            return -1
+        pass
