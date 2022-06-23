@@ -51,3 +51,15 @@ def macd_figure(x, macd, signal, his, yaxis="y2"):
         xaxis="x",
         yaxis=yaxis)
     return [trace1, trace2, trace3]
+
+
+def vol_figure(x, vol, yaxis="y3"):
+    trace = go.Bar(
+        text=[v for v in x],
+        name="volume",
+        x=x,
+        y=vol,
+        xaxis="x",
+        yaxis=yaxis
+    )
+    return trace

@@ -36,12 +36,13 @@ class MACDCross:
 
     def indicate(self, data):
         closes = numpy.array([float(e['close']) for e in data])
-        _, _, macdhist = MACD(
+        macd, signal, macdhist = MACD(
             closes, fastperiod=12, slowperiod=26, signalperiod=9)
         last_two = macdhist[-2:]
-        if (last_two[0] < 0 and last_two[1] > 0):
+        if (last_two[0] < 0 and last_two[1] > 0 and macd[-1:][0] < 0
+                and signal[-1:][0] < 0):
             return 1
-        if (last_two[0] > 0 and last_two[1] < 0):
+        if (last_two[0] > 0 and last_two[1] < 0 and macd[-1:][0] > 0):
             return -1
         return 0
 

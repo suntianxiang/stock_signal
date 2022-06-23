@@ -25,7 +25,8 @@ config = {
     },
     'strategies': [
         'BollStoch',
-        'PriceReverse',
+        'EMACross',
         'MACDCross',
+        'DMICross'
     ],
 }
