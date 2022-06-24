@@ -1,0 +1,54 @@
+{
+    "platform": "sina",
+    "markets": {
+        "sina": {
+            "host": "https://money.finance.sina.com.cn"
+        }
+    },
+    "symbols": [
+        [
+            "保龄宝",
+            "sz002286"
+        ],
+        [
+            "海尔智家",
+            "sh600690"
+        ],
+        [
+            "同仁堂",
+            "sh600085"
+        ],
+        [
+            "格力电器",
+            "sz000651"
+        ],
+        [
+            "海康威视",
+            "sz002415"
+        ],
+        [
+            "广发证券",
+            "sz000776"
+        ]
+    ],
+    "long_period": [
+        "60min",
+        60
+    ],
+    "short_period": [
+        "30min",
+        30
+    ],
+    "notification": {
+        "dingding": {
+            "access_token": "xxx",
+            "secret": "xxx"
+        }
+    },
+    "strategies": [
+        "BollStoch",
+        "EMACross",
+        "MACDCross",
+        "DMICross"
+    ]
+}
