@@ -2,7 +2,7 @@ from bot.strategies.right import EMACross, DMICross
 from bot.strategies.left import BollStoch, MACDCross
 
 
-def strategy_fatory(name):
+def strategy_factory(name):
     match name:
         case 'EMACross':
             return EMACross()

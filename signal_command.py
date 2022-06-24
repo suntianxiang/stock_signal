@@ -5,11 +5,11 @@ from bot.market import Sina
 from bot.config import config
 from bot.notification import DingDing
 from bot.monitor import Monitor
-from bot.strategies.factory import strategy_fatory
+from bot.strategies import strategy_factory
 
 strategies = []
 for name in config['strategies']:
-    strategies.append(strategy_fatory(name))
+    strategies.append(strategy_factory(name))
 symbols = config['symbols']
 sina = Sina()
 notification = DingDing()
