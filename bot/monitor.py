@@ -1,5 +1,5 @@
 from bot.graph import candlestick, ma_line, macd_figure, vol_figure
-from talib import EMA, MACD, BBANDS, SMA
+from talib import EMA, MACD, BBANDS, SMA, set_unstable_period
 import numpy
 import datetime
 import plotly.graph_objects as go
@@ -24,6 +24,7 @@ class Monitor:
             autoescape=select_autoescape()
         )
         self.template = env.get_template("notice.html")
+        set_unstable_period('ALL', 50)
 
     def run(self):
         dt = datetime.datetime.now()
@@ -94,9 +95,9 @@ class Monitor:
             ema20 = EMA(closes, 20)
             ema30 = EMA(closes, 30)
             ema99 = EMA(closes, 99)
-            ma20 = ma_line(x, ema20)
-            ma30 = ma_line(x, ema30)
-            ma99 = ma_line(x, ema99)
+            ma20 = ma_line(x, ema20, 'ema20')
+            ma30 = ma_line(x, ema30, 'ema30')
+            ma99 = ma_line(x, ema99, 'ema99')
             img_data = img_data + [ma20, ma30, ma99]
         if macd:
             macd, signal, his = MACD(closes)

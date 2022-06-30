@@ -17,4 +17,4 @@ monitor = Monitor(symbols, sina, strategies, notification)
 
 while True:
     monitor.run()
-    time.sleep(3600)
+    time.sleep(300)
