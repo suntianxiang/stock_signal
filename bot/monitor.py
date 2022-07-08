@@ -159,7 +159,7 @@ class Monitor:
             yaxis=dict(title="Price", anchor="x", domain=[0.48, 0.99]),
             yaxis2=dict(title="MACD", anchor="x", domain=[0.00, 0.12]),
             yaxis3=dict(title="Volume", anchor="x", domain=[0.13, 0.23]),
-            yaxis4=dict(title="Stoch", anchor="x", domain=[0.24, 0.36])
+            yaxis4=dict(title="Stoch", anchor="x", domain=[0.24, 0.36]),
             yaxis5=dict(title="RSI", anchor="x", domain=[0.37, 0.48]),
         )
         return img
