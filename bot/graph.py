@@ -12,12 +12,16 @@ def candlestick(data):
         close=[v['close'] for v in data])
 
 
-def line(x, y, name='', yaxis="y"):
+def line(x, y, name='', yaxis="y", **kwargs):
     ema_trace = go.Scatter(
         text=[v for v in x],
         x=x,
         y=y,
-        mode='lines', name=name, line=dict(smoothing=1.3), yaxis=yaxis)
+        mode='lines',
+        name=name,
+        yaxis=yaxis,
+        **kwargs
+    )
     return ema_trace
 
 
@@ -73,3 +77,12 @@ def vol_figure(x, vol, yaxis="y3"):
         yaxis=yaxis
     )
     return trace
+
+
+def rsi(x, rsi, yaxis="y4"):
+    current = line(x, rsi, 'rsi', yaxis=yaxis, y0=10, dy=20)
+    low = line(x, [30 for i in range(len(rsi))], '30',
+               yaxis=yaxis, line=dict(width=1, dash="dash"))
+    high = line(x, [70 for i in range(len(rsi))], '70',
+                yaxis=yaxis, line=dict(width=1, dash="dash"))
+    return [current, low, high]

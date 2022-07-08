@@ -1,5 +1,6 @@
 from cmath import isnan, nan
 from bot.graph import candlestick, line, macd_figure, vol_figure
+from bot.graph import rsi as rsi_img
 from talib import EMA, MACD, BBANDS, SMA, set_unstable_period, STOCH, RSI
 import numpy
 import datetime
@@ -37,7 +38,8 @@ class Monitor:
         for v in self.symbols:
             chinese = v[0]
             symbol = v[1]
-            if self.lastMinutes != minutes and (minutes == 3 or self.times == 0):
+            if self.lastMinutes != minutes \
+                    and (minutes == 3 or self.times == 0):
                 res = self.market.kline(symbol, self.market.long_period, 120)
                 tmpSignals = self.technical_analysis(chinese, res)
                 if len(tmpSignals) > 0:
@@ -75,7 +77,8 @@ class Monitor:
                 macd='macd' in img_components,
                 boll='boll' in img_components,
                 STOCHCOMPONENT='stoch' in img_components,
-                CE='ce' in img_components)
+                CE='ce' in img_components,
+                rsi='rsi' in img_components)
             figure.write_image("{}_{}.jpg".format(
                 chinese, str(datetime.date.today())),
                 width=1680, height=900)
@@ -140,12 +143,12 @@ class Monitor:
             img_data += [h, ll]
         if STOCHCOMPONENT:
             slowk, slowd = STOCH(high, low, closes, fastk_period=14)
-            img_data += [line(x, slowk, 'stochK', yaxis="4"),
-                         line(x, slowd, 'stochD', yaxis="4")]
+            img_data += [line(x, slowk, 'stochK', yaxis="y4"),
+                         line(x, slowd, 'stochD', yaxis="y4")]
             pass
         if rsi:
-            rsi = RSI(closes, 20)
-            img_data += [line(x, rsi, 'rsi20', yaxis="5")]
+            rsi_v = RSI(closes, 20)
+            img_data += rsi_img(x, rsi_v)
         vol = vol_figure(x, numpy.array([float(v['volume']) for v in data]))
         img_data.append(vol)
         img = go.Figure(img_data)
@@ -156,7 +159,7 @@ class Monitor:
             xaxis_rangeslider_visible=False,
             xaxis=dict(title_text='time', type='category', tickmode='array',
                        tickvals=x, ticktext=xText),
-            yaxis=dict(title="Price", anchor="x", domain=[0.48, 0.99]),
+            yaxis=dict(title="Price", anchor="x", domain=[0.5, 0.99]),
             yaxis2=dict(title="MACD", anchor="x", domain=[0.00, 0.12]),
             yaxis3=dict(title="Volume", anchor="x", domain=[0.13, 0.23]),
             yaxis4=dict(title="Stoch", anchor="x", domain=[0.24, 0.36]),
