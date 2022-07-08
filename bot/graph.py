@@ -12,11 +12,21 @@ def candlestick(data):
         close=[v['close'] for v in data])
 
 
-def ma_line(x, y, name=''):
+def line(x, y, name='', yaxis="y"):
     ema_trace = go.Scatter(
         text=[v for v in x],
-        x=x, y=y, mode='lines', name=name, line=dict(smoothing=1.3))
+        x=x,
+        y=y,
+        mode='lines', name=name, line=dict(smoothing=1.3), yaxis=yaxis)
     return ema_trace
+
+
+def bar(x, y, name='', yaxis="y"):
+    go.Bar(
+        text=[v for v in x],
+        name=name,
+        x=x,
+        y=y, xaxis="x", yaxis=yaxis)
 
 
 def macd_figure(x, macd, signal, his, yaxis="y2"):

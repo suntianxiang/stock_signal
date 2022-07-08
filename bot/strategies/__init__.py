@@ -1,4 +1,4 @@
-from bot.strategies.right import EMACross, DMICross
+from bot.strategies.right import CERSI, EMACross, DMICross
 from bot.strategies.left import BollStoch, MACDCross
 
 
@@ -12,3 +12,5 @@ def strategy_factory(name):
             return MACDCross()
         case 'DMICross':
             return DMICross()
+        case 'CERSI':
+            return CERSI()

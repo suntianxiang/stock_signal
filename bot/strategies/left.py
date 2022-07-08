@@ -30,6 +30,9 @@ class BollStoch:
         if signal == -1:
             return 'price up boll high and stoch oversell'
 
+    def getImgComponent(self):
+        return ['boll', 'stoch']
+
 
 class MACDCross:
     last = ''
@@ -51,3 +54,6 @@ class MACDCross:
             return 'macd crossover'
         if signal == -1:
             return 'macd crossdown'
+
+    def getImgComponent(self):
+        return ['macd']

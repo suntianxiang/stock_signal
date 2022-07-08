@@ -1,7 +1,7 @@
 from bot.market import Sina
 from bot.notification import DingDing
 from talib import BBANDS, EMA, MACD
-from bot.graph import candlestick, ma_line, macd_figure
+from bot.graph import candlestick, line, macd_figure
 import numpy
 import datetime
 import plotly.graph_objects as go
@@ -18,9 +18,9 @@ xText = [datetime.datetime.strptime(
     for k, v in enumerate(x)]
 closes = [float(v['close']) for v in res]
 candlestick = candlestick(res)
-ma20 = ma_line(x, EMA(numpy.array(closes), 20), name='ma20')
-ma30 = ma_line(x, EMA(numpy.array(closes), 30), name='ma30')
-ma99 = ma_line(x, EMA(numpy.array(closes), 99), name='ma99')
+ma20 = line(x, EMA(numpy.array(closes), 20), name='ma20')
+ma30 = line(x, EMA(numpy.array(closes), 30), name='ma30')
+ma99 = line(x, EMA(numpy.array(closes), 99), name='ma99')
 
 macd, signal, his = MACD(numpy.array([float(v['close']) for v in res]))
 macd_component = macd_figure(x, macd, signal, his)

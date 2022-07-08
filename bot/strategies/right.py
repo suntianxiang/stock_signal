@@ -1,5 +1,6 @@
-from talib import EMA, PLUS_DI, MINUS_DI, ADX
+from talib import EMA, PLUS_DI, MINUS_DI, ADX, RSI
 import numpy
+from ..indicators import chandelier_exit
 
 # price reverse strategy according to ema
 
@@ -16,7 +17,6 @@ class EMACross:
         lastEma20 = ema20[-1:][0]
         lastEma40 = ema40[-1:][0]
         lastEma99 = ema99[-1:][0]
-        minValue = min([float(e['low']) for e in data[-4:]])
         close = float(data[-1:][0]['close'])
         self.last = "ema20:{} ema40:{} ema99:{}".format(
             lastEma20, lastEma40, lastEma99, close)
@@ -44,8 +44,13 @@ class EMACross:
     def getReason(self, signal):
         return self.reason
 
+    def getImgComponent(self):
+        return ['ema']
+
 
 class DMICross:
+    last = ''
+
     def indicate(self, data):
         high = numpy.array([float(e['high']) for e in data])
         low = numpy.array([float(e['low']) for e in data])
@@ -60,3 +65,42 @@ class DMICross:
                 and plus_di[-1:][0] < minus_di[-1:][0]):
             return -1
         return 0
+
+    def getReason(self, signal):
+        return "dmi cross"
+
+    def getImgComponent(self):
+        return []
+
+
+class CERSI:
+    last = ''
+
+    def indicate(self, data):
+        high = numpy.array([float(e['high']) for e in data])
+        low = numpy.array([float(e['low']) for e in data])
+        close = numpy.array([float(e['close']) for e in data])
+        res = chandelier_exit(close, high, low)
+        rsi = RSI(close, 20)
+        # 空 转 多
+        if res['trend'][-1:][0] == 1 and res['trend'][-2:-1][0] == -1:
+            return 1
+        # 多头超卖
+        if res['trend'][-1:][0] == 1 and rsi[-1:][0] < 30:
+            return 1
+        # 多 转 空
+        if res['trend'][-1:][0] == -1 and res['trend'][-2:-1][0] == 1:
+            return -1
+        # 空头超买
+        if res['trend'][-1:][0] == -1 and rsi[-1:][0] > 70:
+            return -1
+        return 0
+
+    def getReason(self, signal):
+        if signal == 1:
+            return 'chandelier_exit buy'
+        elif signal == -1:
+            return 'chandelier_exit sell'
+
+    def getImgComponent(self):
+        return ['ce', 'rsi']
