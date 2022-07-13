@@ -131,7 +131,7 @@ class Monitor:
             img_data = img_data + boll
         if CE:
             ce = chandelier_exit(closes, high, low)
-            for k, v in enumerate(ce['high']):
+            for k, v in enumerate(ce['trend']):
                 if isnan(ce['high'][k]):
                     continue
                 if ce['trend'][k] == 1:
