@@ -132,7 +132,7 @@ class Monitor:
         if CE:
             ce = chandelier_exit(closes, high, low)
             for k, v in enumerate(ce['trend']):
-                if isnan(ce['high'][k]):
+                if ce['trend'][k] == 0:
                     continue
                 if ce['trend'][k] == 1:
                     ce['low'][k] = nan
