@@ -6,12 +6,14 @@ import urllib.parse
 
 import requests
 
+from .config import config
+
 
 class DingDing:
     def notify(self, title, text):
         timestamp = str(round(time.time() * 1000))
         r = requests.post('https://oapi.dingtalk.com/robot/send', params={
-            'access_token': '73c463254d48c99f4a42b4ea7e77cf49453770960ceea1810413783b7ac395f5',
+            'access_token': config["dingding"]["access_token"],
             'timestamp': timestamp,
             'sign': self.__sign(timestamp)
         }, json={
@@ -26,7 +28,7 @@ class DingDing:
         return r.json()
 
     def __sign(self, timestamp):
-        secret = 'SEC3b1f70a11a1ba3636f2c39cd4c6c1f78245d42834845da1ba0afef4fcca2d932'
+        secret = config["dingding"]["secret"]
         secret_enc = secret.encode('utf-8')
         string_to_sign = '{}\n{}'.format(timestamp, secret)
         string_to_sign_enc = string_to_sign.encode('utf-8')
