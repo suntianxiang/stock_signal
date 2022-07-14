@@ -14,7 +14,7 @@ class Market:
 class Sina(Market):
     long_period = 60
     short_period = 30
-    micro_period = 5
+    micro_period = 15
 
     def kline(self, symbol, period, size):
         r = requests.get(
