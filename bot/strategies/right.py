@@ -1,6 +1,6 @@
 from talib import EMA, PLUS_DI, MINUS_DI, ADX, RSI
 import numpy
-from ..indicators import chandelier_exit
+from ..ta import crossover, crossunder, chandelier_exit
 
 # price reverse strategy according to ema
 
@@ -12,31 +12,15 @@ class EMACross:
     def indicate(self, data):
         closes = numpy.array([float(e['close']) for e in data])
         ema20 = EMA(closes, 20)
-        ema40 = EMA(closes, 40)
         ema99 = EMA(closes, 99)
         lastEma20 = ema20[-1:][0]
-        lastEma40 = ema40[-1:][0]
         lastEma99 = ema99[-1:][0]
         close = float(data[-1:][0]['close'])
-        self.last = "ema20:{} ema40:{} ema99:{}".format(
-            lastEma20, lastEma40, lastEma99, close)
-        if ema20[-2:][0] > closes[-2:][0] and ema20[-2:][1] < closes[-2:][1]:
-            self.reason = 'ema20 cross'
+        self.last = "ema20:{} ema99:{}".format(
+            lastEma20, lastEma99, close)
+        if (crossunder(ema20[-3:], ema99[-3:])):
             return 1
-        if ema40[-2:][0] > closes[-2:][0] and ema40[-2:][1] < closes[-2:][1]:
-            self.reason = 'ema40 cross'
-            return 1
-        if ema99[-2:][0] > closes[-2:][0] and ema99[-2:][1] < closes[-2:][1]:
-            self.reason = 'ema99 cross'
-            return 1
-        if ema20[-2:][0] < closes[-2:][0] and ema20[-2:][1] > closes[-2:][1]:
-            self.reason = 'ema20 cross'
-            return -1
-        if ema40[-2:][0] < closes[-2:][0] and ema40[-2:][1] > closes[-2:][1]:
-            self.reason = 'ema40 cross'
-            return -1
-        if ema99[-2:][0] < closes[-2:][0] and ema99[-2:][1] > closes[-2:][1]:
-            self.reason = 'ema99 cross'
+        if (crossover(ema20[-3:], ema99[-3:])):
             return -1
 
         return 0
@@ -81,26 +65,23 @@ class CERSI:
         low = numpy.array([float(e['low']) for e in data])
         close = numpy.array([float(e['close']) for e in data])
         res = chandelier_exit(close, high, low)
-        rsi = RSI(close, 20)
-        # 空 转 多
-        if res['trend'][-1:][0] == 1 and res['trend'][-2:-1][0] == -1:
+        rsiFast = RSI(close, 25)
+        rsiSlow = RSI(close, 100)
+        # 多
+        if res['trend'][-1:][0] == 1 \
+                and crossunder(rsiFast[-3:], rsiSlow[-3:]):
             return 1
-        # 多头超卖
-        if res['trend'][-1:][0] == 1 and rsi[-1:][0] < 30:
-            return 1
-        # 多 转 空
-        if res['trend'][-1:][0] == -1 and res['trend'][-2:-1][0] == 1:
-            return -1
-        # 空头超买
-        if res['trend'][-1:][0] == -1 and rsi[-1:][0] > 70:
+        # 空
+        if res['trend'][-1:][0] == -1 \
+                and crossover(rsiFast[-3:], rsiSlow[-3:]):
             return -1
         return 0
 
     def getReason(self, signal):
         if signal == 1:
-            return 'chandelier_exit buy'
+            return 'chandelier_exit_rsi long'
         elif signal == -1:
-            return 'chandelier_exit sell'
+            return 'chandelier_exit_rsi short'
 
     def getImgComponent(self):
         return ['ce', 'rsi']

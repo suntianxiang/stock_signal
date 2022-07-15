@@ -3,6 +3,34 @@ from numpy import isnan
 from talib import ATR
 
 
+def crossunder(line1, line2):
+    if len(line1) < 2 or len(line2) < 2:
+        return False
+    line1_last_two = line1[len(line1)-2:]
+    line2_last_two = line2[len(line2)-2:]
+    if line1_last_two[0] < line2_last_two[0] \
+            and line1_last_two[1] > line2_last_two[1]:
+        return True
+    return False
+
+
+def crossover(line1, line2):
+    if len(line1) < 2 or len(line2) < 2:
+        return False
+    line1_last_two = line1[len(line1)-2:]
+    line2_last_two = line2[len(line2)-2:]
+    if line1_last_two[0] > line2_last_two[0] \
+            and line1_last_two[1] < line2_last_two[1]:
+        return True
+    return False
+
+
+def cross(line1, line2):
+    if crossunder(line1, line2) or crossover(line1, line2):
+        return True
+    return False
+
+
 def chandelier_exit(close, high, low, period=22):
     data = dict(high=[], low=[], trend=[])
     prev_trend = 0

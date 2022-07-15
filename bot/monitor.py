@@ -7,23 +7,28 @@ import datetime
 import plotly.graph_objects as go
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from bot.indicators import chandelier_exit
+from bot.ta import chandelier_exit
 
 
 class Monitor:
-    market = None
     strategies = []
-    symbols = []
+    stocks = []
+    stock_market = None
+    crypto_coins = []
+    crypto_coin_market = None
     notification = None
     template = None
-    lastMinutes = 0
     times = 0
 
-    def __init__(self, symbols, market, strategies, notification) -> None:
-        self.market = market
+    def __init__(self, strategies, notification, stocks=[], stock_market=None,
+                 crypto_coins=[], crypto_coin_market=None) -> None:
+        self.stock_market = stock_market
         self.strategies = strategies
-        self.symbols = symbols
+        self.stocks = stocks
+        self.stock_market = stock_market
+        self.crypto_coins = crypto_coins
         self.notification = notification
+        self.crypto_coin_market = crypto_coin_market
         env = Environment(
             loader=FileSystemLoader("templates"),
             autoescape=select_autoescape()
@@ -33,26 +38,42 @@ class Monitor:
 
     def run(self):
         dt = datetime.datetime.now()
-        minutes = int(int(dt.strftime('%M'))/10)
+        if (dt.minute > 30 and dt.hour >= 9) and \
+                (dt.minute < 30 and dt.hour <= 15):
+            self.monitor_stock()
+        self.monitor_crypto_coins()
+
+    def monitor_stock(self):
+        dt = datetime.datetime.now()
         signals = []
-        for v in self.symbols:
+        if dt.minute < 30 or dt.minute > 50 and self.times != 0:
+            return
+        for v in self.stocks:
             chinese = v[0]
             symbol = v[1]
-            if self.lastMinutes != minutes \
-                    and (minutes == 3 or self.times == 0):
-                res = self.market.kline(symbol, self.market.long_period, 120)
-                tmpSignals = self.technical_analysis(chinese, res)
-                if len(tmpSignals) > 0:
-                    signals = signals + tmpSignals
-            res = self.market.kline(symbol, self.market.micro_period, 20)
-            volSignals = self.vol_watch(chinese, res)
-            if len(volSignals) > 0:
-                signals = signals + volSignals
+            res = self.stock_market.kline(
+                symbol, self.stock_market.long_period, 120)
+            tmpSignals = self.technical_analysis(chinese, res)
+            if len(tmpSignals) > 0:
+                signals = signals + tmpSignals
         if len(signals) > 0:
             res = self.template.render(signals=signals)
             self.notification.notify('bot signal', res)
-        self.lastMinutes = minutes
-        self.times += 1
+        self.times = 1
+
+    def monitor_crypto_coins(self):
+        signals = []
+        for v in self.crypto_coins:
+            chinese = v[0]
+            symbol = v[1]
+            res = self.crypto_coin_market.kline(
+                symbol, self.crypto_coin_market.micro_period, 120)
+            tmpSignals = self.technical_analysis(chinese, res)
+            if len(tmpSignals) > 0:
+                signals = signals + tmpSignals
+        if len(signals) > 0:
+            res = self.template.render(signals=signals)
+            self.notification.notify('bot signal', res)
 
     def technical_analysis(self, chinese, kline):
         signals = []

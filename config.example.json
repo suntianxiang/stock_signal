@@ -5,7 +5,7 @@
             "host": "https://money.finance.sina.com.cn"
         }
     },
-    "symbols": [
+    "stocks": [
         [
             "保龄宝",
             "sz002286"
@@ -29,6 +29,20 @@
         [
             "广发证券",
             "sz000776"
+        ]
+    ],
+    "crypto_coins": [
+        [
+            "btc",
+            "btcusdt"
+        ],
+        [
+            "eth",
+            "ethusdt"
+        ],
+        [
+            "doge",
+            "dogeusdt"
         ]
     ],
     "long_period": [
