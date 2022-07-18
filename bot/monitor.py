@@ -53,7 +53,8 @@ class Monitor:
             symbol = v[1]
             res = self.stock_market.kline(
                 symbol, self.stock_market.long_period, 120)
-            tmpSignals = self.technical_analysis(chinese, res)
+            tmpSignals = self.technical_analysis(
+                chinese, res, period=self.stock_market.long_period)
             if len(tmpSignals) > 0:
                 signals = signals + tmpSignals
         if len(signals) > 0:
@@ -68,14 +69,15 @@ class Monitor:
             symbol = v[1]
             res = self.crypto_coin_market.kline(
                 symbol, self.crypto_coin_market.micro_period, 120)
-            tmpSignals = self.technical_analysis(chinese, res)
+            tmpSignals = self.technical_analysis(
+                chinese, res, period=self.crypto_coin_market.micro_period)
             if len(tmpSignals) > 0:
                 signals = signals + tmpSignals
         if len(signals) > 0:
             res = self.template.render(signals=signals)
             self.notification.notify('bot signal', res)
 
-    def technical_analysis(self, chinese, kline):
+    def technical_analysis(self, chinese, kline, period=''):
         signals = []
         last_price = kline[-1:][0]['close']
         img_components = []
@@ -84,7 +86,7 @@ class Monitor:
             if indication != 0:
                 signals.append({
                     'flag': indication,
-                    'period': self.market.long_period,
+                    'period': period,
                     'indicator': strategy.getReason(indication),
                     'symbol': chinese,
                     'last': strategy.last,
