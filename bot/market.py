@@ -1,3 +1,4 @@
+import time
 import requests
 from .config import config
 
@@ -54,12 +55,13 @@ class Binance(Market):
         data = []
         for item in res:
             data.append(dict(
-                id=item[0]/1000,
+                day=time.strftime("%Y-%m-%d %H:%M:%S",
+                                  time.localtime(int(item[0]/1000))),
                 open=item[1],
                 high=item[2],
                 low=item[3],
                 close=item[4],
-                vol=item[5],
+                volume=item[5],
                 amount=None,
                 count=item[8],
             ))
