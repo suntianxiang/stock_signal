@@ -11,22 +11,33 @@ from bot.ta import chandelier_exit
 
 
 class Monitor:
+    """
+    Finance Monitor
+        strategies: a list of strategies we care
+        stocks: a list of stocks symbol like [code, 'chinese']
+        stock_market: Market we use, the source of kline for stock
+        cryptocurrency: a list of cryto coins we care
+        crypto_coin_market: the source of kline for cryptocurreny
+        notification: tool to notify you
+        template: html template engine, we use jinja2
+        times: How times the monitor run
+    """
     strategies = []
     stocks = []
     stock_market = None
-    crypto_coins = []
+    cryptocurrency = []
     crypto_coin_market = None
     notification = None
     template = None
     times = 0
 
     def __init__(self, strategies, notification, stocks=[], stock_market=None,
-                 crypto_coins=[], crypto_coin_market=None) -> None:
+                 cryptocurrency=[], crypto_coin_market=None) -> None:
         self.stock_market = stock_market
         self.strategies = strategies
         self.stocks = stocks
         self.stock_market = stock_market
-        self.crypto_coins = crypto_coins
+        self.cryptocurrency = cryptocurrency
         self.notification = notification
         self.crypto_coin_market = crypto_coin_market
         env = Environment(
@@ -36,13 +47,15 @@ class Monitor:
         self.template = env.get_template("notice.html")
         set_unstable_period('ALL', 50)
 
+    # start monitor
     def run(self):
         dt = datetime.datetime.now()
-        if (dt.minute > 30 and dt.hour >= 9) and \
-                (dt.minute < 30 and dt.hour <= 15):
+        if ((dt.minute > 30 and dt.hour == 9) or dt.hour >= 10) and \
+                ((dt.minute < 30 and dt.hour == 15) or dt.hour < 15):
             self.monitor_stock()
-        self.monitor_crypto_coins()
+        # self.monitor_cryptocurrency()
 
+    # monitor stock market
     def monitor_stock(self):
         dt = datetime.datetime.now()
         signals = []
@@ -62,9 +75,10 @@ class Monitor:
             self.notification.notify('bot signal', res)
         self.times = 1
 
-    def monitor_crypto_coins(self):
+    # monitor cryptocurrency market
+    def monitor_cryptocurrency(self):
         signals = []
-        for v in self.crypto_coins:
+        for v in self.cryptocurrency:
             chinese = v[0]
             symbol = v[1]
             res = self.crypto_coin_market.kline(
@@ -78,6 +92,13 @@ class Monitor:
             self.notification.notify('bot signal', res)
 
     def technical_analysis(self, chinese, kline, period=''):
+        """
+        start technical analysis from kline
+
+            chinese: symbols translation
+            kline: kline data
+            period: kline period
+        """
         signals = []
         last_price = kline[-1:][0]['close']
         img_components = []

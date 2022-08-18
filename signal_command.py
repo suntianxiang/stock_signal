@@ -11,12 +11,12 @@ strategies = []
 for name in config['strategies']:
     strategies.append(strategy_factory(name))
 stocks = config['stocks']
-crypto_coins = config['crypto_coins']
+cryptocurrency = config['cryptocurrency']
 sina = Sina()
 crypto_coin_market = Binance()
 notification = DingDing()
 monitor = Monitor(strategies, notification, stocks=stocks,
-                  stock_market=sina, crypto_coins=crypto_coins,
+                  stock_market=sina, cryptocurrency=cryptocurrency,
                   crypto_coin_market=crypto_coin_market)
 
 while True:
