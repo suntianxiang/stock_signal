@@ -1,5 +1,8 @@
 import plotly.graph_objects as go
 import pandas as pd
+"""
+stock image components
+"""
 
 
 def candlestick(data):
